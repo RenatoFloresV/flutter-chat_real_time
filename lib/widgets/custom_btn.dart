@@ -4,16 +4,16 @@ class CustomBtn extends StatelessWidget {
   const CustomBtn({
     super.key,
     required this.text,
-    required this.onLoginPressed,
+    required this.onPressed,
   });
 
   final String text;
-  final VoidCallback onLoginPressed;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onLoginPressed,
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         shape: const StadiumBorder(),
         elevation: 2,

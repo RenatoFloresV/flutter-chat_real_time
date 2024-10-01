@@ -1,3 +1,8 @@
+import '../helpers/custom_snackbar.dart';
+import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
+
+import '../helpers/alert_dialog.dart';
 import '../widgets/labels_login.dart';
 import '../widgets/logo.dart';
 import 'package:flutter/material.dart';
@@ -46,24 +51,47 @@ class _FormState extends State<_Form> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: const EdgeInsets.only(top: 40),
       padding: const EdgeInsets.symmetric(horizontal: 50),
       child: Column(
         children: [
-          const CustomInput(
+          CustomInput(
+            controller: emailController,
             prefixIcon: Icons.mail_outline,
             hintText: 'Email',
             keyboardType: TextInputType.emailAddress,
           ),
-          const CustomInput(
+          CustomInput(
+            controller: passwordController,
             prefixIcon: Icons.lock_outline,
             obscureText: true,
             hintText: 'Password',
           ),
           CustomBtn(
-            text: 'Login',
-            onLoginPressed: () {},
+            text: authService.isLoading ? 'Loading...' : 'Login',
+            onPressed: authService.isLoading
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final res = await authService.login(
+                        emailController.text, passwordController.text);
+
+                    if (res.ok) {
+                      Navigator.pushReplacementNamed(context, 'users');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        CustomSnackbar.create(
+                          message: res.msg,
+                          backgroundColor: Colors.green,
+                          icon: Icons.check_circle,
+                        ),
+                      );
+                    } else {
+                      viewAlert(
+                          context, 'Error', res.errorMsg!, AlertType.error);
+                    }
+                  },
           )
         ],
       ),

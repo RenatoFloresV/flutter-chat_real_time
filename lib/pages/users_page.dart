@@ -1,15 +1,19 @@
+import '../helpers/custom_snackbar.dart';
+import '../services/auth_service.dart';
+import 'package:provider/provider.dart';
+
 import '../models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-class UsersPages extends StatefulWidget {
-  const UsersPages({super.key});
+class UsersPage extends StatefulWidget {
+  const UsersPage({super.key});
 
   @override
-  State<UsersPages> createState() => _UsersPagesState();
+  State<UsersPage> createState() => _UsersPageState();
 }
 
-class _UsersPagesState extends State<UsersPages> {
+class _UsersPageState extends State<UsersPage> {
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -23,16 +27,26 @@ class _UsersPagesState extends State<UsersPages> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    final user = authService.user;
+
     return Scaffold(
         appBar: AppBar(
-          title: const Text('User name'),
+          title: Text(user.name, style: const TextStyle(color: Colors.black87)),
           elevation: 1,
           backgroundColor: Colors.white,
           leading: const Icon(Icons.wifi, color: Colors.green),
           actions: [
             Container(
               margin: const EdgeInsets.only(right: 10),
-              child: const Icon(Icons.exit_to_app),
+              child: IconButton(
+                icon: const Icon(Icons.exit_to_app),
+                onPressed: () {
+                  // Navigate to logout page
+                  Navigator.pushReplacementNamed(context, 'login');
+                  AuthService().logout();
+                },
+              ),
             )
           ],
         ),

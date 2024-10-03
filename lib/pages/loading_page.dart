@@ -1,3 +1,4 @@
+import '../services/socket_service.dart';
 import 'login_page.dart';
 import 'users_page.dart';
 import '../services/auth_service.dart';
@@ -27,17 +28,17 @@ class LoadingPage extends StatelessWidget {
 
   Future<void> _checkLoginStatus(BuildContext context) async {
     final authService = Provider.of<AuthService>(context, listen: false);
+    final socketService = Provider.of<SocketService>(context, listen: false);
+
     final isLoggedIn = await authService.isLoggedIn();
 
     if (isLoggedIn) {
-      const successMessage = 'Login successful!';
-
+      socketService.connect();
       Navigator.pushReplacement(
         context,
         PageRouteBuilder(
           pageBuilder: (_, __, ___) => const UsersPage(),
           transitionDuration: const Duration(milliseconds: 0),
-          settings: const RouteSettings(arguments: successMessage),
         ),
       );
     } else {

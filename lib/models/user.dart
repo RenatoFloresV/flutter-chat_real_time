@@ -21,7 +21,14 @@ class User {
         name: json["name"] ?? '',
         email: json["email"] ?? '',
         uid: json["uid"] ?? '',
-        isOnline: json["isOnline"] ?? false,
+        isOnline: json["online"] ?? false,
+      );
+
+  factory User.fromMap(json) => User(
+        name: json['name'] ?? '',
+        email: json['email'] ?? '',
+        uid: json['uid'] ?? '',
+        isOnline: json['online'] ?? false,
       );
 
   Map<String, dynamic> toJson() => {

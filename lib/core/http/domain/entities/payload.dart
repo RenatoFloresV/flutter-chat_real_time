@@ -11,33 +11,15 @@ class ChatResponse<T> {
     this.body,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'ok': ok,
-      'msg': msg,
-      'errorMsg': errorMsg,
-      'body': body,
-    };
-  }
-
-  static ChatResponse<T> fromMap<T>(
+  factory ChatResponse.fromJson(
     Map<String, dynamic> json,
-    T Function(Map<String, dynamic>) fromJson,
+    T Function(dynamic)? dataParser,
   ) {
     return ChatResponse<T>(
       ok: json['ok'] ?? false,
-      msg: json['msg'] ?? '',
-      errorMsg: json['errorMsg'] ?? '',
-      body: json['body'] != null ? fromJson(json['body']) : null,
-    );
-  }
-
-  factory ChatResponse.fromJson(Map<String, dynamic> json) {
-    return ChatResponse<T>(
-      ok: json['ok'] ?? false,
-      msg: json['msg'] ?? '',
-      errorMsg: json['errorMsg'] ?? '',
-      body: json['body'] ?? {},
+      msg: json['msg'] ?? 'No message provided',
+      errorMsg: json['errorMsg'],
+      body: dataParser != null ? dataParser(json) : null,
     );
   }
 }

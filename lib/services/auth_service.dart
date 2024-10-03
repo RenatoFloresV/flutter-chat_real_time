@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import '../core/http/http.dart';
+
 import '../global/environment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,9 +22,9 @@ class AuthService with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String?> get token => _storage.read(key: 'token');
-  Future<String?> get refreshToken => _storage.read(key: 'refresh_token');
-  Future<void> get deleteToken => _storage.delete(key: 'delete_token');
+  static Future<String?> getToken() async {
+    return await const FlutterSecureStorage().read(key: 'token');
+  }
 
   Future<LoginResponse> login(String email, String password) async {
     isLoading = true;
@@ -80,14 +82,18 @@ class AuthService with ChangeNotifier {
     }
   }
 
-  Future isLoggedIn() async {
+  Future<bool> isLoggedIn() async {
     final token = await _storage.read(key: 'token');
     final res = await http.get(Uri.parse('${Environment.apiUrl}login/renew'),
         headers: {'x-token': '$token', 'Content-Type': 'application/json'});
 
-    final result = jsonDecode(res.body);
-    print(result);
-    if (result['ok']) {
+    final result =
+        ChatResponse<User>.fromJson(jsonDecode(res.body) ?? {}, (json) {
+      return User.fromJson(json['user'] ?? {});
+    });
+
+    if (result.ok) {
+      user = result.body!;
       return true;
     } else {
       logout();
